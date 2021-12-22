@@ -221,7 +221,7 @@ int _main(struct thread *td) {
   
   ok = scePthreadCreate(&listenTd, NULL, &listenThread, NULL, "nik:listenthr");
   printf_debug("[main]: Started = 0x%X\n", ok);
-  ok = scePthreadJoin(&listenTd, &threadRet);
+  ok = scePthreadJoin(listenTd, &threadRet);
   printf_debug("[main]: Return code = 0x%X, 0x%llX.\n", ok, ((long long)((intptr_t)threadRet)));
   
   printf_notification("Goodbye.");
