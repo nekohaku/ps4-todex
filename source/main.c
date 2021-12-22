@@ -70,6 +70,15 @@ int(*sceBgftServiceIntDownloadRegisterTaskByStorage)(struct bgft_download_param*
 int(*sceBgftServiceIntDownloadStartTask)(int in_taskId);
 int libBgft;
 
+void cleanupFiles() {
+  char name[64];
+  for (int i = 0; i < 1000; ++i) {
+    NZERO(name);
+    snprintf(name, sizeof(name) - 1, "/user/home/pkg_%d.pkg", i + 100);
+    unlink(name);
+  }
+}
+
 void installPackage(char* pkgname) {
   int tid, ok;
   tid = BGFT_INVALID_TASK_ID;
@@ -93,12 +102,12 @@ void installPackage(char* pkgname) {
 }
 
 void* downloadThread(void* psock) {
-  char buff[4096];
+  char buff[8192];
   char name[32];
   int sock, bsread, pkgfd;
   
   sock = ((int)((intptr_t)psock));
-  bsread = -1;
+  bsread = 0;
   
   NZERO(name);
   NZERO(buff);
@@ -116,7 +125,7 @@ void* downloadThread(void* psock) {
   
   while (1) {
     bsread = sceNetRecv(sock, buff, sizeof(buff), 0);
-    printf_debug("[listenthr:download] bsread = %d\n", bsread);
+    //printf_debug("[listenthr:download] bsread = %d\n", bsread);
     if (bsread <= 0) break;
     write(pkgfd, buff, bsread);
     
@@ -131,7 +140,6 @@ void* downloadThread(void* psock) {
   // install it :3
   printf_debug("[listenthr:download] installing pkg, name = %s\n", name);
   installPackage(name);
-  unlink(name);
   
   return (void*)0;
 }
@@ -208,6 +216,7 @@ int _main(struct thread *td) {
   
   printf_notification("Starting...");
   threadRet = NULL;
+  cleanupFiles();
   
   // load bgft module and resolve stuff...
   printf_debug("[main] preinit...\n");
