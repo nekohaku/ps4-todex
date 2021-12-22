@@ -131,6 +131,7 @@ void* downloadThread(void* psock) {
 
 void* listenThread(void* unused) {
   int sock, ok;
+  unsigned int slen;
   ScePthread downloadTd;
   struct in_addr sin;
   
@@ -145,7 +146,7 @@ void* listenThread(void* unused) {
   // make a listener socket
   ok = sock = sceNetSocket("nik:listensck", AF_INET, SOCK_STREAM, 0);
   if (ok < 0) goto l_err;
-  ok = sceNetBind(sock, &sin, sizeof(sin));
+  ok = sceNetBind(sock, (struct sockaddr*)&sin, sizeof(sin));
   if (ok < 0) goto l_err;
   
   while (1) {
@@ -154,7 +155,7 @@ void* listenThread(void* unused) {
     printf_debug("[listenthr:accept] listen = 0x%X\n", ok);
     if (ok < 0) goto l_err;
     // make a socket
-    ok = connsock = sceNetAccept(sock, &sin, sizeof(sin));
+    ok = connsock = sceNetAccept(sock, (struct sockaddr*)&sin, &slen);
     printf_debug("[listenthr:accept] socket = 0x%X\n", ok);
     if (ok < 0) goto l_err;
     // spin a thread
