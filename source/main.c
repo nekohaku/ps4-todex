@@ -105,7 +105,7 @@ void* downloadThread(void* psock) {
   
   snprintf(name, sizeof(name) - 1, "/user/home/pkg_%d.pkg", sock + 100);
   pkgfd = open(name, O_WRONLY, O_CREAT | O_TRUNC);
-  if (pkgfd < 0) return (void*)pkgfd;
+  if (pkgfd < 0) return ((void*)((intptr_t)pkgfd));
   
   printf_debug("[listenthr:download] getting pkg, name = %s\n", name);
   
@@ -134,6 +134,7 @@ void* listenThread(void* unused) {
   unsigned int slen;
   ScePthread downloadTd;
   struct sockaddr_in sin;
+  UNUSED(unused);
   
   NZERO(sin);
   sin.sin_len = sizeof(sin);
@@ -170,7 +171,7 @@ l_err:
   sceNetSocketClose(sock);
   sock = -1;
   printf_debug("[listenthr:shutdown] done.\n");
-  return (void*)ok;
+  return ((void*)((intptr_t)ok));
 }
 
 int _main(struct thread *td) {
