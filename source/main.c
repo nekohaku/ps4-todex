@@ -145,9 +145,12 @@ void* listenThread(void* unused) {
   sock = -1;
   
   // make a listener socket
-  ok = sock = sceNetSocket("nik:listensck", AF_INET, SOCK_STREAM, 0);
+  ok = sceNetSocket("nik:listensck", AF_INET, SOCK_STREAM, 0);
+  sock = ok;
+  printf_debug("[listenthr:accept] sock = 0x%X\n", sock);
   if (ok < 0) goto l_err;
   ok = sceNetBind(sock, (struct sockaddr*)&sin, sizeof(sin));
+  printf_debug("[listenthr:accept] bind = 0x%X\n", ok);
   if (ok < 0) goto l_err;
   
   while (1) {
@@ -156,8 +159,9 @@ void* listenThread(void* unused) {
     printf_debug("[listenthr:accept] listen = 0x%X\n", ok);
     if (ok < 0) goto l_err;
     // make a socket
-    ok = connsock = sceNetAccept(sock, (struct sockaddr*)&sin, &slen);
-    printf_debug("[listenthr:accept] socket = 0x%X\n", ok);
+    ok = sceNetAccept(sock, (struct sockaddr*)&sin, &slen);
+    connsock = ok;
+    printf_debug("[listenthr:accept] socket = 0x%X\n", connsock);
     if (ok < 0) goto l_err;
     // spin a thread
     ok = scePthreadCreate(&downloadTd, NULL, &downloadThread, ((void*)((intptr_t)connsock)), "nik:getthr");
