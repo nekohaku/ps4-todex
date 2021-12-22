@@ -200,12 +200,12 @@ int _main(struct thread *td) {
   
   // load bgft module and resolve stuff...
   printf_debug("[main] preinit...\n");
-  libBgft = sceKernelLoadStartModule("libSceBgft.sprx", 0, 0, 0, NULL, NULL);
+  libBgft = sceKernelLoadStartModule("/system/common/lib/libSceBgft.sprx", 0, 0, 0, NULL, NULL);
   printf_debug("[main] bgft = 0x%X\n", libBgft);
   RESOLVE(libBgft, sceBgftInitialize);
   RESOLVE(libBgft, sceBgftDownloadRegisterTaskByStorage);
   RESOLVE(libBgft, sceBgftDownloadStartTask);
-  printf_debug("[main] bgft resolve ok, 0x%p\n", sceBgftInitialize);
+  printf_debug("[main] bgft resolve = 0x%p\n", sceBgftInitialize);
   
   struct bgft_init_params ip = {
     .mem = mmap(NULL, 0x100000, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0),
