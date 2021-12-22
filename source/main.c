@@ -117,7 +117,7 @@ void* downloadThread(void* psock) {
   
   close(pkgfd);
   pkgfd = -1;
-  sceNetShutdown(sock, 2 /* SHUT_RDWR */);
+  sceNetSocketAbort(sock, 0);
   sceNetSocketClose(sock);
   sock = -1;
   
@@ -130,7 +130,7 @@ void* downloadThread(void* psock) {
 }
 
 void* listenThread(void* unused) {
-  int sock, ok;
+  int sock, ok, connsock;
   unsigned int slen;
   ScePthread downloadTd;
   struct sockaddr_in sin;
@@ -159,14 +159,14 @@ void* listenThread(void* unused) {
     printf_debug("[listenthr:accept] socket = 0x%X\n", ok);
     if (ok < 0) goto l_err;
     // spin a thread
-    ok = scePthreadCreate(&downloadTd, NULL, &downloadThread, (void*)ok, "nik:getthr");
+    ok = scePthreadCreate(&downloadTd, NULL, &downloadThread, ((void*)((intptr_t)connsock)), "nik:getthr");
     printf_debug("[listenthr:accept] ok = 0x%X\n", ok);
     if (ok < 0) goto l_err;
   }
   
 l_err:
   printf_debug("[listenthr:shutdown] shutting down...\n");
-  sceNetShutdown(sock, 2 /* SHUT_RDWR */);
+  sceNetSocketAbort(sock, 0);
   sceNetSocketClose(sock);
   sock = -1;
   printf_debug("[listenthr:shutdown] done.\n");
