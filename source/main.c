@@ -205,7 +205,7 @@ int _main(struct thread *td) {
   RESOLVE(libBgft, sceBgftServiceIntInit);
   RESOLVE(libBgft, sceBgftServiceIntDownloadRegisterTaskByStorage);
   RESOLVE(libBgft, sceBgftServiceIntDownloadStartTask);
-  printf_debug("[main] bgft resolve = 0x%p\n", sceBgftInitialize);
+  printf_debug("[main] bgft resolve = 0x%p\n", sceBgftServiceIntInit);
   
   struct bgft_init_params ip = {
     .mem = mmap(NULL, 0x100000, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0),
