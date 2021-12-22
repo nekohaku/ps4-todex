@@ -127,7 +127,7 @@ void* downloadThread(void* psock) {
     bsread = sceNetRecv(sock, buff, sizeof(buff), 0);
     //printf_debug("[listenthr:download] bsread = %d\n", bsread);
     if (bsread <= 0) break;
-    write(pkgfd, buff, bsread);
+    //write(pkgfd, buff, bsread);
     
   }
   
