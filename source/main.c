@@ -133,7 +133,7 @@ void* listenThread(void* unused) {
   int sock, ok;
   unsigned int slen;
   ScePthread downloadTd;
-  struct in_addr sin;
+  struct sockaddr_in sin;
   
   NZERO(sin);
   sin.sin_len = sizeof(sin);
