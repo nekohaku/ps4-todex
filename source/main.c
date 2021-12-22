@@ -104,10 +104,15 @@ void* downloadThread(void* psock) {
   NZERO(buff);
   
   snprintf(name, sizeof(name) - 1, "/user/home/pkg_%d.pkg", sock + 100);
-  pkgfd = open(name, O_WRONLY, O_CREAT | O_TRUNC);
-  if (pkgfd < 0) return ((void*)((intptr_t)pkgfd));
+  printf_debug("[listenthr:download] name = %s\n", name);
+  pkgfd = open(name, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+  if (pkgfd < 0) {
+    printf_debug("[listenthr:download] err = %d\n", pkgfd);
+    *((int*)NULL) = 0;
+    return ((void*)((intptr_t)pkgfd));
+  }
   
-  printf_debug("[listenthr:download] getting pkg, name = %s\n", name);
+  printf_debug("[listenthr:download] getting pkg, fd = %d, name = %s\n", pkgfd, name);
   
   while (1) {
     bsread = sceNetRecv(sock, buff, sizeof(buff), 0);
