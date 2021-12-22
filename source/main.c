@@ -65,9 +65,9 @@ struct bgft_init_params {
 	unsigned long size;
 };
 
-int(*sceBgftInitialize)(struct bgft_init_params* in_initParams);
-int(*sceBgftDownloadRegisterTaskByStorage)(struct bgft_download_param* in_dlParams, int* out_taskId);
-int(*sceBgftDownloadStartTask)(int in_taskId);
+int(*sceBgftServiceIntInit)(struct bgft_init_params* in_initParams);
+int(*sceBgftServiceIntDownloadRegisterTaskByStorage)(struct bgft_download_param* in_dlParams, int* out_taskId);
+int(*sceBgftServiceIntDownloadStartTask)(int in_taskId);
 int libBgft;
 
 void installPackage(char* pkgname) {
@@ -85,10 +85,10 @@ void installPackage(char* pkgname) {
     .option = BGFT_TASK_OPTION_DISABLE_CDN_QUERY_PARAM,
   };
   
-  ok = sceBgftDownloadRegisterTaskByStorage(&params, &tid);
+  ok = sceBgftServiceIntDownloadRegisterTaskByStorage(&params, &tid);
   printf_debug("[listenthr:install] terr1 = %x\n", ok);
   if (ok < 0) return;
-  ok = sceBgftDownloadStartTask(tid);
+  ok = sceBgftServiceIntDownloadStartTask(tid);
   printf_debug("[listenthr:install] terr2 = %x\n", ok);
 }
 
@@ -202,9 +202,9 @@ int _main(struct thread *td) {
   printf_debug("[main] preinit...\n");
   libBgft = sceKernelLoadStartModule("/system/common/lib/libSceBgft.sprx", 0, 0, 0, NULL, NULL);
   printf_debug("[main] bgft = 0x%X\n", libBgft);
-  RESOLVE(libBgft, sceBgftInitialize);
-  RESOLVE(libBgft, sceBgftDownloadRegisterTaskByStorage);
-  RESOLVE(libBgft, sceBgftDownloadStartTask);
+  RESOLVE(libBgft, sceBgftServiceIntInit);
+  RESOLVE(libBgft, sceBgftServiceIntDownloadRegisterTaskByStorage);
+  RESOLVE(libBgft, sceBgftServiceIntDownloadStartTask);
   printf_debug("[main] bgft resolve = 0x%p\n", sceBgftInitialize);
   
   struct bgft_init_params ip = {
@@ -212,7 +212,7 @@ int _main(struct thread *td) {
     .size = 0x100000,
   };
   
-  ok = sceBgftInitialize(&ip);
+  ok = sceBgftServiceIntInit(&ip);
   printf_debug("[main]: bgft init = 0x%X\n", ok);
   
   ok = scePthreadCreate(&listenTd, NULL, &listenThread, NULL, "nik:listenthr");
